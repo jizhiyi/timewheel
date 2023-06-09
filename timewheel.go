@@ -21,7 +21,7 @@ type oneWheel struct {
 }
 
 type TimeWheel struct {
-	curTick    int64 // 当前时间
+	curTime    int64 // 当前时间
 	startTime  int64 // 开始时间
 	firstWheel *oneWheel
 }
@@ -59,4 +59,9 @@ func newOneWheel(wheelSize int64, prevWheel *oneWheel) *oneWheel {
 	newWheel.slots = make([]*list.List, wheelSize)
 	newWheel.curPos = 0
 	return newWheel
+}
+
+// getResidueTime 计算当前时间轮剩余的时间
+func (this *oneWheel) getResidueTime() int64 {
+	return (this.wheelSize - this.curPos) * this.tickScale
 }
