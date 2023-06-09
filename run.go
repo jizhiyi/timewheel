@@ -32,6 +32,9 @@ func (this *TimeWheel) doTask() {
 	}
 	for elem := l.Front(); elem != nil; elem = elem.Next() {
 		task, _ := elem.Value.(*oneTask)
+		if this.isRemoved(task.guid) {
+			continue
+		}
 		if task.callback != nil {
 			// 直接goruntine执行好吗
 			// go task.callback()
@@ -50,6 +53,7 @@ func (this *oneWheel) advancePos() {
 	this.curPos %= this.wheelSize
 }
 
+// diffuseTask 将高层时间轮扩散到低层
 func (this *oneWheel) diffuseTask(wheel *TimeWheel) {
 	// 直接重新调用 addTask 应该是可以的把
 	var l *list.List
@@ -58,6 +62,10 @@ func (this *oneWheel) diffuseTask(wheel *TimeWheel) {
 	}
 	for elem := l.Front(); elem != nil; elem = elem.Next() {
 		task, _ := elem.Value.(*oneTask)
+		if wheel.isRemoved(task.guid) {
+			continue
+		}
+        // TODO: 这里直接调用addTask
 		wheel.addTask(task)
 	}
 	this.slots[this.curPos] = nil

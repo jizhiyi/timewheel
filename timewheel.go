@@ -5,6 +5,7 @@ import "container/list"
 type TimeWheelCallBack func()
 
 type oneTask struct {
+	guid       int64 // 唯一标记
 	targetTime int64 // 目标时间
 	periodTime int64 // 周期
 	callback   TimeWheelCallBack
@@ -20,10 +21,17 @@ type oneWheel struct {
 	curPos    int64
 }
 
+type taskListIndex struct {
+	l *list.List
+	e *list.Element
+}
+
 type TimeWheel struct {
-	curTime    int64 // 当前时间
-	startTime  int64 // 开始时间
-	firstWheel *oneWheel
+	curTime        int64 // 当前时间
+	startTime      int64 // 开始时间
+	firstWheel     *oneWheel
+	guidRemoveFlag map[int64]struct{}
+	genTaskGUID    int64 // 生成taskGUID
 }
 
 // NewTimeWheel 新建一个时间轮的结构, startTime 开始时间, firstScale 第一层时间轮一个刻度大小, allWheelSize 每层时间轮刻度数量
@@ -32,6 +40,7 @@ func NewTimeWheel(startTime, firstScale int64, allWheelSize []int64) *TimeWheel 
 		panic("Invalid parameter: firstScale allWheelSize")
 	}
 	timeWheel := &TimeWheel{startTime: startTime}
+    timeWheel.guidRemoveFlag = map[int64]struct{}{}
 	var tmpOneWheel *oneWheel
 	for i, wheelSize := range allWheelSize {
 		if i == 0 {
@@ -64,4 +73,9 @@ func newOneWheel(wheelSize int64, prevWheel *oneWheel) *oneWheel {
 // getResidueTime 计算当前时间轮剩余的时间
 func (this *oneWheel) getResidueTime() int64 {
 	return (this.wheelSize - this.curPos) * this.tickScale
+}
+
+func (this *TimeWheel) isRemoved(guid int64) bool {
+	_, ok := this.guidRemoveFlag[guid]
+	return ok
 }

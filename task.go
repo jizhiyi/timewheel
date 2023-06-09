@@ -19,7 +19,14 @@ func (this *TimeWheel) addTask(task *oneTask) {
 }
 
 func (this *TimeWheel) AddTask(targetTime, periodTime int64, callback TimeWheelCallBack) {
-	this.addTask(&oneTask{targetTime: targetTime, periodTime: periodTime, callback: callback})
+	this.genTaskGUID++
+	this.addTask(&oneTask{guid: this.genTaskGUID, targetTime: targetTime, periodTime: periodTime, callback: callback})
+}
+
+// RemoveTask 移除guid标识的任务, 只加入标记，在使用的时候跳过处理
+// 这样好像不是特别好，如果是有频繁的对未来的任务增加和移除, 会导致 guidRemoveFlag 一直累加
+func (this *TimeWheel) RemoveTask(guid int64) {
+	this.guidRemoveFlag[guid] = struct{}{}
 }
 
 func (this *TimeWheel) fixDiffTime(task *oneTask) int64 {
