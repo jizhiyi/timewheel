@@ -16,8 +16,8 @@ func (this *TimeWheel) advanceScale() {
 			this.curTime += tmpOneWheel.tickScale
 			tmpOneWheel.advancePos()
 		} else {
-			tmpOneWheel.diffuseTask(this)
 			tmpOneWheel.advancePos()
+			tmpOneWheel.diffuseTask(this)
 		}
 		if tmpOneWheel.curPos != 0 {
 			break
