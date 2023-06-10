@@ -1,8 +1,11 @@
 package timewheel
 
-import "container/list"
+import (
+	"container/list"
+	"fmt"
+)
 
-func (this *TimeWheel) addTask(task *oneTask) {
+func (this *TimeWheel) addTask(task *oneTask) (int64, error) {
 	diffTime := this.fixDiffTime(task)
 	for tmpOneWheel := this.firstWheel; tmpOneWheel != nil; tmpOneWheel = tmpOneWheel.nextWheel {
 		// 可以放进当前时间轮
@@ -12,10 +15,11 @@ func (this *TimeWheel) addTask(task *oneTask) {
 				tmpOneWheel.slots[putPos] = &list.List{}
 			}
 			tmpOneWheel.slots[putPos].PushBack(task)
-			return
+			return task.guid, nil
 		}
 	}
 	// 所有时间轮都放不下,后续可能需要增加错误处理
+	return 0, fmt.Errorf("not push task, targetTime %d", task.targetTime)
 }
 
 func (this *TimeWheel) AddTask(targetTime, periodTime int64, callback TimeWheelCallBack) {
