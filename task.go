@@ -22,9 +22,9 @@ func (this *TimeWheel) addTask(task *oneTask) (int64, error) {
 	return 0, fmt.Errorf("not push task, targetTime %d", task.targetTime)
 }
 
-func (this *TimeWheel) AddTask(targetTime, periodTime int64, callback TimeWheelCallBack) {
+func (this *TimeWheel) AddTask(targetTime, periodTime int64, callback TimeWheelCallBack) (int64, error) {
 	this.genTaskGUID++
-	this.addTask(&oneTask{guid: this.genTaskGUID, targetTime: targetTime, periodTime: periodTime, callback: callback})
+	return this.addTask(&oneTask{guid: this.genTaskGUID, targetTime: targetTime, periodTime: periodTime, callback: callback})
 }
 
 // RemoveTask 移除guid标识的任务, 只加入标记，在使用的时候跳过处理
