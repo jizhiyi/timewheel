@@ -36,9 +36,9 @@ func (this *TimeWheel) doTask() {
 			continue
 		}
 		if task.callback != nil {
-			// 直接goruntine执行好吗
+			// 直接goroutine执行好吗
 			// go task.callback()
-			task.callback()
+			go task.callback()
 		}
 		if task.periodTime > 0 {
 			task.targetTime += task.periodTime
@@ -65,7 +65,7 @@ func (this *oneWheel) diffuseTask(wheel *TimeWheel) {
 		if wheel.isRemoved(task.guid) {
 			continue
 		}
-        // TODO: 这里直接调用addTask
+		// TODO: 这里直接调用addTask
 		wheel.addTask(task)
 	}
 	this.slots[this.curPos] = nil
